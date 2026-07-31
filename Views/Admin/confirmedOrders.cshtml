@@ -1,0 +1,102 @@
+@model List<Bakery_Management_System.Models.Order>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<section class="section">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="section-header mb-0">
+                <i class="ion ion-checkmark-circled text-info mr-2"></i>Active Confirmed Orders
+            </h1>
+            <small class="text-muted">Track orders currently being prepared or out for delivery.</small>
+        </div>
+        <a asp-action="AllOrders" class="btn btn-outline-secondary rounded-pill">View Full Pipeline &rarr;</a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Order #</th>
+                                <th>Order Date</th>
+                                <th>Customer Email</th>
+                                <th>Items Ordered</th>
+                                <th>Total Amount</th>
+                                <th>Current Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                var total = order.OrderItems.Sum(oi => oi.Price);
+                                string status = order.OrderStatus ?? "Confirmed";
+                                string badgeClass = status switch
+                                {
+                                    "Confirmed" => "badge-info",
+                                    "Preparing" => "badge-primary",
+                                    "Out for Delivery" => "badge-secondary",
+                                    _ => "badge-success"
+                                };
+
+                                <tr>
+                                    <td class="font-weight-bold text-danger">#@order.OrderId</td>
+                                    <td>
+                                        <small class="text-dark font-weight-bold d-block">
+                                            @(order.OrderDate?.ToString("dd MMM yyyy, hh:mm tt") ?? "N/A")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark font-weight-bold">@(order.User?.Username ?? $"User #{order.UserId}")</strong>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" data-toggle="collapse" data-target="#items_conf_@order.OrderId">
+                                            <i class="fas fa-shopping-basket mr-1"></i> @order.OrderItems.Count Item(s)
+                                        </button>
+                                        <div class="collapse mt-2" id="items_conf_@order.OrderId">
+                                            <div class="card card-body p-2 bg-light border-0 small">
+                                                @foreach (var item in order.OrderItems)
+                                                {
+                                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                                        <span>@(item.Product?.ProductName ?? "Custom Cake Item") (x@item.Quantity)</span>
+                                                        <strong class="text-dark">PKR @item.Price.ToString("N0")</strong>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="font-weight-bold text-success">PKR @total.ToString("N0")</td>
+                                    <td><span class="badge @badgeClass px-3 py-1 font-weight-bold">@status</span></td>
+                                    <td class="text-right">
+                                        <form asp-action="UpdateOrderStatus" method="post" class="d-inline-flex gap-2 align-items-center">
+                                            <input type="hidden" name="id" value="@order.OrderId" />
+                                            <select name="newStatus" class="form-control form-control-sm border-info" style="max-width: 140px;" onchange="this.form.submit()">
+                                                <option value="Confirmed" selected="@(status == "Confirmed")">Confirmed</option>
+                                                <option value="Preparing" selected="@(status == "Preparing")">Preparing</option>
+                                                <option value="Out for Delivery" selected="@(status == "Out for Delivery")">Out for Delivery</option>
+                                                <option value="Delivered" selected="@(status == "Delivered" || status == "Completed")">Delivered</option>
+                                                <option value="Cancelled" selected="@(status == "Cancelled")">Cancel Order</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center text-muted">
+                    <i class="fas fa-check-circle fs-1 text-secondary mb-3 d-block"></i>
+                    <h5>No active confirmed orders in progress.</h5>
+                </div>
+            }
+        </div>
+    </div>
+</section>

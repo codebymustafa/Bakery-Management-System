@@ -1,0 +1,114 @@
+@model List<Bakery_Management_System.Models.Product>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string currentSearch = ViewBag.CurrentSearch as string ?? "";
+    bool lowStockOnly = ViewBag.LowStockOnly ?? false;
+}
+
+<section class="section">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="section-header mb-0">
+                <i class="ion ion-cube text-danger mr-2"></i>Inventory & Stock Control
+            </h1>
+            <small class="text-muted">Monitor ingredient stock levels, low stock alerts, and quick inventory updates.</small>
+        </div>
+    </div>
+
+    <!-- Search & Low Stock Toggle -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body p-3">
+            <form method="get" asp-action="Inventory" class="form-row align-items-center">
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white border-right-0"><i class="fas fa-search text-muted"></i></span>
+                        </div>
+                        <input type="text" name="search" class="form-control border-left-0" placeholder="Search product by name..." value="@currentSearch" />
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <div class="custom-control custom-checkbox pt-2">
+                        <input type="checkbox" name="lowStockOnly" value="true" class="custom-control-input" id="lowStockCheck" selected="@(lowStockOnly)" onchange="this.form.submit()">
+                        <label class="custom-control-label font-weight-bold text-danger" for="lowStockCheck">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> Show Low Stock Only (<=5)
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark btn-block font-weight-bold rounded-pill">Filter</button>
+                    @if (!string.IsNullOrEmpty(currentSearch) || lowStockOnly)
+                    {
+                        <a asp-action="Inventory" class="btn btn-outline-secondary ml-2 rounded-pill"><i class="fas fa-undo"></i></a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inventory Stock Table -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Unit Price</th>
+                                <th>Stock Status</th>
+                                <th class="text-right">Update Stock Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model)
+                            {
+                                string badgeClass = p.ProductQuantity <= 5 ? "badge-danger" : (p.ProductQuantity <= 15 ? "badge-warning" : "badge-success");
+                                string statusLabel = p.ProductQuantity <= 5 ? "CRITICAL LOW" : (p.ProductQuantity <= 15 ? "MODERATE" : "HEALTHY");
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="@p.ProductImage" alt="@p.ProductName" class="rounded mr-3 shadow-sm" style="width: 48px; height: 48px; object-fit: cover;" />
+                                            <div>
+                                                <strong class="d-block text-dark">@p.ProductName</strong>
+                                                <small class="text-muted">ID: #@p.ProductId</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-light border">@(p.Category?.CategoryName ?? "General")</span>
+                                    </td>
+                                    <td class="font-weight-bold text-dark">PKR @p.ProductPrice.ToString("N0")</td>
+                                    <td>
+                                        <span class="badge @badgeClass px-3 py-1 font-weight-bold">
+                                            @statusLabel (@p.ProductQuantity Units)
+                                        </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <form asp-action="UpdateStock" method="post" class="d-inline-flex align-items-center justify-content-end gap-2">
+                                            <input type="hidden" name="ProductId" value="@p.ProductId" />
+                                            <input type="number" name="NewQuantity" value="@p.ProductQuantity" min="0" class="form-control form-control-sm text-center font-weight-bold" style="width: 90px;" />
+                                            <button type="submit" class="btn btn-sm btn-danger rounded-pill px-3 ml-2 font-weight-bold">
+                                                Update
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center text-muted">
+                    <i class="fas fa-boxes fs-1 text-secondary mb-3 d-block"></i>
+                    <h5>No inventory records found matching your filters.</h5>
+                </div>
+            }
+        </div>
+    </div>
+</section>

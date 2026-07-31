@@ -1,0 +1,298 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var adminName = ViewBag.Username ?? "Admin";
+    var recentOrders = ViewBag.RecentOrders as List<Bakery_Management_System.Models.Order> ?? new List<Bakery_Management_System.Models.Order>();
+    var lowStockList = ViewBag.LowStockList as List<Bakery_Management_System.Models.Product> ?? new List<Bakery_Management_System.Models.Product>();
+    decimal totalRevenue = ViewBag.TotalRevenue != null ? (decimal)ViewBag.TotalRevenue : 0;
+}
+
+<section class="section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-header mb-0">
+            <i class="ion ion-speedometer text-danger mr-2"></i>Admin Dashboard
+        </h1>
+        <span class="badge badge-light p-2 shadow-sm border">
+            <i class="fas fa-clock text-danger mr-1"></i> @DateTime.Now.ToString("dd MMM yyyy, hh:mm tt")
+        </span>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: linear-gradient(135deg, #FFF0F3 0%, #FFE5D9 100%); border-left: 5px solid #D81B60 !important;">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h4 class="font-weight-bold text-dark mb-1">Welcome back, @adminName! 👋</h4>
+                <p class="text-muted mb-0">Here's your live Royal Bakers performance overview and real-time store metrics.</p>
+            </div>
+            <a asp-action="AllOrders" class="btn btn-danger rounded-pill px-4 py-2 font-weight-bold shadow-sm mt-2 mt-sm-0">
+                <i class="ion ion-bag mr-1"></i> View All Orders
+            </a>
+        </div>
+    </div>
+
+    <!-- Top Metric Cards -->
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-12 mb-4">
+            <div class="card card-sm-3 shadow-sm border-0 rounded-3">
+                <div class="card-icon bg-danger text-white rounded-left">
+                    <i class="ion ion-ios-box"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Total Products</h4></div>
+                    <div class="card-body font-weight-bold text-dark">@ViewBag.TotalProducts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-12 mb-4">
+            <div class="card card-sm-3 shadow-sm border-0 rounded-3">
+                <div class="card-icon bg-info text-white rounded-left">
+                    <i class="ion ion-pricetags"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Categories</h4></div>
+                    <div class="card-body font-weight-bold text-dark">@ViewBag.TotalCategories</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-12 mb-4">
+            <div class="card card-sm-3 shadow-sm border-0 rounded-3">
+                <div class="card-icon bg-primary text-white rounded-left">
+                    <i class="ion ion-person-stalker"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Customers</h4></div>
+                    <div class="card-body font-weight-bold text-dark">@ViewBag.TotalCustomers</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-12 mb-4">
+            <div class="card card-sm-3 shadow-sm border-0 rounded-3">
+                <div class="card-icon bg-success text-white rounded-left">
+                    <i class="ion ion-cash"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Total Revenue</h4></div>
+                    <div class="card-body font-weight-bold text-success">PKR @totalRevenue.ToString("N0")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Pipeline Status Bar Cards -->
+    <div class="row">
+        <div class="col-lg-2 col-md-4 col-6 mb-4">
+            <div class="card border-0 shadow-sm text-center rounded-3 bg-white">
+                <div class="card-body p-3">
+                    <span class="badge badge-warning px-3 py-1 mb-2">Pending</span>
+                    <h3 class="font-weight-bold text-dark mb-0">@ViewBag.PendingOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-6 mb-4">
+            <div class="card border-0 shadow-sm text-center rounded-3 bg-white">
+                <div class="card-body p-3">
+                    <span class="badge badge-info px-3 py-1 mb-2">Confirmed</span>
+                    <h3 class="font-weight-bold text-dark mb-0">@ViewBag.ConfirmedOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-6 mb-4">
+            <div class="card border-0 shadow-sm text-center rounded-3 bg-white">
+                <div class="card-body p-3">
+                    <span class="badge badge-primary px-3 py-1 mb-2" style="background-color:#fd7e14;">Preparing</span>
+                    <h3 class="font-weight-bold text-dark mb-0">@ViewBag.PreparingOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-6 mb-4">
+            <div class="card border-0 shadow-sm text-center rounded-3 bg-white">
+                <div class="card-body p-3">
+                    <span class="badge badge-secondary px-3 py-1 mb-2" style="background-color:#6f42c1; color:white;">Out for Delivery</span>
+                    <h3 class="font-weight-bold text-dark mb-0">@ViewBag.OutForDeliveryOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-6 mb-4">
+            <div class="card border-0 shadow-sm text-center rounded-3 bg-white">
+                <div class="card-body p-3">
+                    <span class="badge badge-success px-3 py-1 mb-2">Delivered</span>
+                    <h3 class="font-weight-bold text-dark mb-0">@ViewBag.DeliveredOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-6 mb-4">
+            <div class="card border-0 shadow-sm text-center rounded-3 bg-white">
+                <div class="card-body p-3">
+                    <span class="badge badge-danger px-3 py-1 mb-2">Cancelled</span>
+                    <h3 class="font-weight-bold text-dark mb-0">@ViewBag.CancelledOrders</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Chart & Low Stock Alerts Row -->
+    <div class="row">
+        <!-- Sales Pipeline Breakdown Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="font-weight-bold text-dark mb-0"><i class="fas fa-chart-pie text-danger mr-2"></i>Order Status Analytics</h5>
+                    <small class="text-muted">Live Pipeline Metrics</small>
+                </div>
+                <div class="card-body">
+                    <div style="height: 280px; position: relative;">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Alerts Panel -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="font-weight-bold text-dark mb-0"><i class="fas fa-exclamation-triangle text-warning mr-2"></i>Low Stock Alerts</h5>
+                    <a asp-action="Inventory" class="btn btn-sm btn-outline-danger rounded-pill">Manage</a>
+                </div>
+                <div class="card-body p-0">
+                    @if (lowStockList.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in lowStockList)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <div>
+                                        <strong class="d-block text-dark">@item.ProductName</strong>
+                                        <small class="text-muted">@(item.Category?.CategoryName ?? "General")</small>
+                                    </div>
+                                    <span class="badge badge-danger badge-pill px-3 py-2">
+                                        @item.ProductQuantity Left
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="p-4 text-center text-muted">
+                            <i class="fas fa-check-circle text-success fs-1 mb-2 d-block"></i>
+                            All products are sufficiently stocked!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+            <h5 class="font-weight-bold text-dark mb-0"><i class="fas fa-receipt text-danger mr-2"></i>Recent Orders</h5>
+            <a asp-action="AllOrders" class="btn btn-sm btn-outline-secondary rounded-pill">View All Orders &rarr;</a>
+        </div>
+        <div class="card-body p-0">
+            @if (recentOrders.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer Email</th>
+                                <th>Order Date</th>
+                                <th>Items</th>
+                                <th>Grand Total</th>
+                                <th>Status</th>
+                                <th class="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in recentOrders)
+                            {
+                                var grandTotal = order.OrderItems.Sum(oi => oi.Price);
+                                string status = order.OrderStatus ?? "Pending";
+                                string badgeClass = status switch
+                                {
+                                    "Pending" => "badge-warning",
+                                    "Confirmed" => "badge-info",
+                                    "Preparing" => "badge-primary",
+                                    "Out for Delivery" => "badge-secondary",
+                                    "Delivered" => "badge-success",
+                                    "Completed" => "badge-success",
+                                    _ => "badge-danger"
+                                };
+
+                                <tr>
+                                    <td class="font-weight-bold text-danger">#@order.OrderId</td>
+                                    <td>@(order.User?.Username ?? $"User #{order.UserId}")</td>
+                                    <td>@(order.OrderDate?.ToString("dd MMM yyyy, hh:mm tt") ?? "N/A")</td>
+                                    <td><span class="badge badge-light border">@order.OrderItems.Count Item(s)</span></td>
+                                    <td class="font-weight-bold text-dark">PKR @grandTotal.ToString("N0")</td>
+                                    <td><span class="badge @badgeClass px-3 py-1">@status</span></td>
+                                    <td class="text-right">
+                                        <a asp-action="AllOrders" asp-route-search="@order.OrderId" class="btn btn-sm btn-outline-danger rounded-pill">
+                                            Manage Order
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">No recent orders found.</div>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('orderStatusChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'],
+                datasets: [{
+                    label: 'Orders Count',
+                    data: [
+                        @ViewBag.PendingOrders,
+                        @ViewBag.ConfirmedOrders,
+                        @ViewBag.PreparingOrders,
+                        @ViewBag.OutForDeliveryOrders,
+                        @ViewBag.DeliveredOrders,
+                        @ViewBag.CancelledOrders
+                    ],
+                    backgroundColor: [
+                        '#ffc107',
+                        '#17a2b8',
+                        '#fd7e14',
+                        '#6f42c1',
+                        '#28a745',
+                        '#dc3545'
+                    ],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    });
+</script>
+}

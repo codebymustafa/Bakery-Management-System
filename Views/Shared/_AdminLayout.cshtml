@@ -1,0 +1,221 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var username = Context.Session.GetString("Username") ?? "Admin";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
+    <title>Royal Bakers &mdash; Admin Management</title>
+
+    <link rel="icon" type="image/png" href="@Url.Content("~/favicon.ico")" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 4 / Stisla CSS -->
+    <link rel="stylesheet" href="@Url.Content("~/modules/bootstrap/css/bootstrap.min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/modules/ionicons/css/ionicons.min.css")">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <link rel="stylesheet" href="@Url.Content("~/css/demo.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/style.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/custom.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/addproduct.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/productlist.css")">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .main-wrapper {
+            padding-bottom: 70px;
+        }
+        .sidebar-brand a {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #D81B60 !important;
+            letter-spacing: 1px;
+        }
+        .toast-container-fixed {
+            position: fixed;
+            top: 75px;
+            right: 25px;
+            z-index: 9999;
+            min-width: 320px;
+            max-width: 450px;
+        }
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .badge-pending { background-color: #ffc107; color: #000; }
+        .badge-confirmed { background-color: #17a2b8; color: #fff; }
+        .badge-preparing { background-color: #fd7e14; color: #fff; }
+        .badge-outfordelivery { background-color: #6f42c1; color: #fff; }
+        .badge-delivered { background-color: #28a745; color: #fff; }
+        .badge-completed { background-color: #28a745; color: #fff; }
+        .badge-cancelled { background-color: #dc3545; color: #fff; }
+        .badge-rejected { background-color: #dc3545; color: #fff; }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="main-wrapper">
+
+            <!-- Navbar -->
+            <div class="navbar-bg"></div>
+            <nav class="navbar navbar-expand-lg main-navbar">
+                <form class="form-inline mr-auto">
+                    <ul class="navbar-nav mr-3">
+                        <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg"><i class="ion ion-navicon-round"></i></a></li>
+                    </ul>
+                </form>
+                <ul class="navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg">
+                            <i class="fas fa-user-circle mr-2 fs-5"></i>
+                            <div class="d-sm-none d-lg-inline-block font-weight-bold">@username</div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0 rounded-3">
+                            <a asp-controller="Customer" asp-action="Index" class="dropdown-item has-icon text-primary">
+                                <i class="fas fa-store mr-2"></i> Customer View
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form method="post" asp-controller="Admin" asp-action="Logout" class="p-0 m-0">
+                                <button type="submit" class="dropdown-item has-icon text-danger border-0 bg-transparent w-100 text-left">
+                                    <i class="ion ion-log-out mr-2"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Sidebar -->
+            <div class="main-sidebar">
+                <aside id="sidebar-wrapper">
+                    <div class="sidebar-brand">
+                        <a asp-controller="Admin" asp-action="Dashboard" class="d-flex align-items-center justify-content-center gap-2 py-3">
+                            <img src="@Url.Content("~/img/logo.png")" alt="Logo" style="height: 36px; border-radius: 50%;">
+                            <span>ROYAL BAKERS</span>
+                        </a>
+                    </div>
+
+                    <div class="sidebar-user p-3 border-bottom mb-3 text-center">
+                        <div class="font-weight-bold text-dark fs-6">@username</div>
+                        <div class="badge badge-danger px-3 py-1 mt-1">Administrator</div>
+                    </div>
+
+                    <ul class="sidebar-menu">
+                        <li class="menu-header">Overview</li>
+                        <li class="@(currentController == "Admin" && currentAction == "Dashboard" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="Dashboard"><i class="ion ion-speedometer"></i><span>Dashboard</span></a>
+                        </li>
+
+                        <li class="menu-header">Catalog Management</li>
+                        <li class="@(currentController == "Admin" && currentAction == "ProductList" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="ProductList"><i class="ion ion-ios-list"></i><span>All Products</span></a>
+                        </li>
+                        <li class="@(currentController == "Admin" && currentAction == "AddProduct" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="AddProduct"><i class="ion ion-plus-circled"></i><span>Add Product</span></a>
+                        </li>
+                        <li class="@(currentController == "Admin" && currentAction == "Categories" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="Categories"><i class="ion ion-pricetags"></i><span>Categories</span></a>
+                        </li>
+
+                        <li class="menu-header">Orders & Sales</li>
+                        <li class="@(currentController == "Admin" && currentAction == "AllOrders" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="AllOrders"><i class="ion ion-bag"></i><span>All Orders Pipeline</span></a>
+                        </li>
+                        <li class="@(currentController == "Admin" && currentAction == "CustomerOrders" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="CustomerOrders"><i class="ion ion-clock"></i><span>Pending Orders</span></a>
+                        </li>
+                        <li class="@(currentController == "Admin" && currentAction == "ConfirmedOrders" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="ConfirmedOrders"><i class="ion ion-checkmark-circled"></i><span>Active Orders</span></a>
+                        </li>
+
+                        <li class="menu-header">Users & Stock</li>
+                        <li class="@(currentController == "Admin" && currentAction == "Customers" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="Customers"><i class="ion ion-person-stalker"></i><span>Customers</span></a>
+                        </li>
+                        <li class="@(currentController == "Admin" && currentAction == "Inventory" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="Inventory"><i class="ion ion-cube"></i><span>Inventory Stock</span></a>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Toast Notifications -->
+                @if (TempData["ToastSuccess"] != null || TempData["OrderSuccess"] != null)
+                {
+                    var msg = TempData["ToastSuccess"] ?? TempData["OrderSuccess"];
+                    <div class="toast-container-fixed">
+                        <div class="alert alert-success alert-dismissible fade show shadow-lg border-0 rounded-3" role="alert">
+                            <i class="fas fa-check-circle mr-2"></i> <strong>Success!</strong> @msg
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+                @if (TempData["ToastError"] != null || TempData["OrderError"] != null)
+                {
+                    var msg = TempData["ToastError"] ?? TempData["OrderError"];
+                    <div class="toast-container-fixed">
+                        <div class="alert alert-danger alert-dismissible fade show shadow-lg border-0 rounded-3" role="alert">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> <strong>Error!</strong> @msg
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                @RenderBody()
+            </div>
+
+            <!-- Footer -->
+            <footer class="main-footer text-center mt-4">
+                <div class="footer-left">
+                    &copy; 2026 <a href="#">Royal Bakers Admin Portal</a>. All Rights Reserved.
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JS Assets -->
+    <script src="@Url.Content("~/modules/jquery.min.js")"></script>
+    <script src="@Url.Content("~/modules/popper.js")"></script>
+    <script src="@Url.Content("~/modules/tooltip.js")"></script>
+    <script src="@Url.Content("~/modules/bootstrap/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/modules/nicescroll/jquery.nicescroll.min.js")"></script>
+    <script src="@Url.Content("~/modules/scroll-up-bar/dist/scroll-up-bar.min.js")"></script>
+    <script src="@Url.Content("~/js/sa-functions.js")"></script>
+    <script src="@Url.Content("~/js/scripts.js")"></script>
+    <script src="@Url.Content("~/js/custom.js")"></script>
+    <script src="@Url.Content("~/js/demo.js")"></script>
+
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Auto-dismiss alerts after 5s
+        setTimeout(function() {
+            $('.toast-container-fixed .alert').alert('close');
+        }, 5000);
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

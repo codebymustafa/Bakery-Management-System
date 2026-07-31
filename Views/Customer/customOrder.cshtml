@@ -1,0 +1,490 @@
+@{
+    ViewBag.Title = "Interactive Custom Cake Builder";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="cake-builder-wrapper">
+    <div class="container-fluid px-lg-5">
+        <div class="text-center mb-5">
+            <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold mb-2">Interactive Visualizer</span>
+            <h1 class="fw-bold text-dark" style="font-family: 'Playfair Display', serif; font-size: 2.8rem;">Design Your Custom Cake</h1>
+            <p class="text-muted fs-6 mt-2">
+                Choose your <strong>Shape</strong>, <strong>Size</strong>, and <strong>Frosting</strong> by clicking options in the sidebar.
+                Then <strong>drag toppings</strong> from the palette and <strong>drop them anywhere</strong> on the cake canvas!
+            </p>
+        </div>
+
+        <div class="builder-container">
+            <!-- ========== LEFT SIDEBAR ========== -->
+            <div class="builder-sidebar">
+
+                <!-- 1. Shape -->
+                <div class="builder-section-title">
+                    <i class="fas fa-shapes text-danger"></i> 1. Cake Shape
+                </div>
+                <div class="builder-option-group">
+                    <div class="builder-btn active" data-shape="round" onclick="setShape(this,'round')">
+                        <i class="fas fa-circle d-block fs-3 mb-1 text-danger"></i>
+                        Round
+                    </div>
+                    <div class="builder-btn" data-shape="square" onclick="setShape(this,'square')">
+                        <i class="fas fa-square d-block fs-3 mb-1 text-danger"></i>
+                        Square
+                    </div>
+                    <div class="builder-btn" data-shape="heart" style="grid-column: span 2;" onclick="setShape(this,'heart')">
+                        <i class="fas fa-heart d-block fs-3 mb-1 text-danger"></i>
+                        Heart
+                    </div>
+                </div>
+
+                <!-- 2. Size / Tiers -->
+                <div class="builder-section-title">
+                    <i class="fas fa-layer-group text-danger"></i> 2. Size & Tiers
+                </div>
+                <div class="builder-option-group">
+                    <div class="builder-btn active" data-tiers="1" data-price="1200" onclick="setTiers(this,1,1200)">
+                        <span class="d-block fw-bold fs-6">1 Tier</span>
+                        <small class="text-muted">1 lb · PKR 1,200</small>
+                    </div>
+                    <div class="builder-btn" data-tiers="2" data-price="2200" onclick="setTiers(this,2,2200)">
+                        <span class="d-block fw-bold fs-6">2 Tiers</span>
+                        <small class="text-muted">2 lb · PKR 2,200</small>
+                    </div>
+                    <div class="builder-btn" data-tiers="3" data-price="3200" style="grid-column: span 2;" onclick="setTiers(this,3,3200)">
+                        <span class="d-block fw-bold fs-6">3 Tiers</span>
+                        <small class="text-muted">3 lb · PKR 3,200</small>
+                    </div>
+                </div>
+
+                <!-- 3. Frosting Flavor -->
+                <div class="builder-section-title">
+                    <i class="fas fa-fill-drip text-danger"></i> 3. Frosting Flavor
+                </div>
+                <div class="color-swatch-group mb-3">
+                    <div class="swatch-btn active" style="background:#4A2E2B;" title="Belgian Chocolate Fudge" onclick="setFrosting(this,'#4A2E2B','Belgian Chocolate Fudge')"></div>
+                    <div class="swatch-btn" style="background:#FFFACC;" title="Vanilla Buttercream" onclick="setFrosting(this,'#FFFACC','Vanilla Buttercream')"></div>
+                    <div class="swatch-btn" style="background:#FFB3C6;" title="Strawberry Blush" onclick="setFrosting(this,'#FFB3C6','Strawberry Blush')"></div>
+                    <div class="swatch-btn" style="background:#8B0000;" title="Royal Red Velvet" onclick="setFrosting(this,'#8B0000','Royal Red Velvet')"></div>
+                    <div class="swatch-btn" style="background:#6F4E37;" title="Caramel Coffee" onclick="setFrosting(this,'#6F4E37','Caramel Coffee')"></div>
+                    <div class="swatch-btn" style="background:#C8A2C8;" title="Lavender Cream" onclick="setFrosting(this,'#C8A2C8','Lavender Cream')"></div>
+                </div>
+                <p class="text-muted small mb-0" id="frostingLabel">
+                    <i class="fas fa-palette text-danger me-1"></i>Frosting: <strong>Belgian Chocolate Fudge</strong>
+                </p>
+
+                <!-- 4. Drag & Drop Toppings -->
+                <div class="builder-section-title mt-3">
+                    <i class="fas fa-hand-holding text-danger"></i> 4. Toppings (Drag Only)
+                </div>
+                <div class="alert alert-light border py-2 px-3 mb-3 rounded-3 small text-muted">
+                    <i class="fas fa-info-circle text-danger me-1"></i>
+                    Drag a topping and <strong>drop it</strong> anywhere on the cake canvas to place it!
+                </div>
+                <div class="toppings-palette">
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'🍓',150)" ondragend="endDrag(event)">
+                        <span>🍓</span> Strawberries <span class="ms-auto text-muted">+150</span>
+                    </div>
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'🍒',100)" ondragend="endDrag(event)">
+                        <span>🍒</span> Cherries <span class="ms-auto text-muted">+100</span>
+                    </div>
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'✨',300)" ondragend="endDrag(event)">
+                        <span>✨</span> Gold Flakes <span class="ms-auto text-muted">+300</span>
+                    </div>
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'🕯️',50)" ondragend="endDrag(event)">
+                        <span>🕯️</span> Candles <span class="ms-auto text-muted">+50</span>
+                    </div>
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'🌈',80)" ondragend="endDrag(event)">
+                        <span>🌈</span> Sprinkles <span class="ms-auto text-muted">+80</span>
+                    </div>
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'🌸',250)" ondragend="endDrag(event)">
+                        <span>🌸</span> Edible Flowers <span class="ms-auto text-muted">+250</span>
+                    </div>
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'🍫',120)" ondragend="endDrag(event)">
+                        <span>🍫</span> Choc Drizzle <span class="ms-auto text-muted">+120</span>
+                    </div>
+                    <div class="topping-chip" draggable="true" ondragstart="startDrag(event,'⭐',200)" ondragend="endDrag(event)">
+                        <span>⭐</span> Gold Stars <span class="ms-auto text-muted">+200</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== RIGHT CANVAS STAGE ========== -->
+            <div class="builder-canvas-stage">
+                <div class="d-flex justify-content-between align-items-center w-100 mb-4">
+                    <span class="fw-bold text-dark fs-6">
+                        <i class="fas fa-eye text-danger me-2"></i>Live Cake Preview
+                    </span>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold" onclick="clearAllToppings()">
+                        <i class="fas fa-eraser me-1"></i>Clear All Toppings
+                    </button>
+                </div>
+
+                <!-- DROP ZONE - the entire area is the drop target -->
+                <div class="stage-drop-zone"
+                     id="dropZone"
+                     ondragover="onDragOver(event)"
+                     ondragleave="onDragLeave(event)"
+                     ondrop="onDrop(event)">
+
+                    <!-- Cake layers rendered here -->
+                    <div class="cake-visual-stack shape-round" id="cakeStack">
+                        <div class="cake-layer layer-tier-1" style="background-color:#4A2E2B;"></div>
+                    </div>
+
+                    <!-- Hint text shown when empty -->
+                    <div id="dropHint" class="drop-hint-text">
+                        <i class="fas fa-arrow-down"></i> Drop toppings here
+                    </div>
+                </div>
+
+                <!-- Toppings summary list -->
+                <div id="toppingsSummary" class="w-100 mt-3" style="display:none;">
+                    <p class="small text-muted mb-1 fw-bold"><i class="fas fa-list text-danger me-1"></i>Toppings Added:</p>
+                    <div id="toppingsList" class="d-flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Live Price Footer -->
+                <div class="builder-price-footer">
+                    <div>
+                        <small class="text-muted d-block text-uppercase fw-bold" style="letter-spacing:.8px;">Total Estimated Price</small>
+                        <h4 id="livePriceLabel">PKR 1,200</h4>
+                    </div>
+                    <button class="btn btn-danger rounded-pill px-5 py-3 fw-bold shadow" onclick="openOrderModal()">
+                        <i class="fas fa-birthday-cake me-2"></i>Order Custom Cake
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================
+     CONFIRMATION MODAL POPUP
+   ============================================= -->
+<div class="modal fade" id="customCakeModal" tabindex="-1" aria-labelledby="customCakeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header text-white" style="background: linear-gradient(135deg, #F4ACB7 0%, #D81B60 100%);">
+                <h5 class="modal-header-title fw-bold m-0" id="customCakeModalLabel" style="font-family: 'Playfair Display', serif;">
+                    <i class="fas fa-birthday-cake me-2"></i>Confirm Custom Cake Order
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background: #FFFDF9;">
+                <p class="text-muted small mb-3 text-center">Please review your customized cake selection before placing your order.</p>
+
+                <div class="card border-0 rounded-3 p-3 mb-3 shadow-sm" style="background: #FFF0F3; border: 1px solid #FFD6E0 !important;">
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                        <span class="text-muted small"><i class="fas fa-shapes text-danger me-2"></i>Cake Shape</span>
+                        <strong class="text-dark" id="modalShape">Round</strong>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                        <span class="text-muted small"><i class="fas fa-layer-group text-danger me-2"></i>Size & Tiers</span>
+                        <strong class="text-dark" id="modalTiers">1 Tier (1 lb)</strong>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                        <span class="text-muted small"><i class="fas fa-fill-drip text-danger me-2"></i>Frosting Flavor</span>
+                        <strong class="text-dark" id="modalFrosting">Belgian Chocolate Fudge</strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="fas fa-hand-holding text-danger me-2"></i>Toppings Placed</span>
+                        <span class="badge bg-white text-dark border px-3 py-1 fw-bold" id="modalToppingsSummary">None</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background: linear-gradient(135deg, #FFE5D9, #FFF0F3);">
+                    <span class="fw-bold text-dark fs-6">Grand Total Amount</span>
+                    <span class="fw-bold text-danger fs-4" id="modalTotalPrice">PKR 1,200</span>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-top-0 px-4 py-3 justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">
+                    Modify Design
+                </button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow" id="btnConfirmOrder" onclick="confirmAndSubmitCustomOrder()">
+                    <span>Confirm & Place Order</span>
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .drop-hint-text {
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(244,172,183,0.5);
+        font-size: 0.85rem;
+        font-weight: 600;
+        pointer-events: none;
+        white-space: nowrap;
+        transition: opacity 0.3s;
+    }
+    .drop-hint-text.hidden { opacity: 0; }
+</style>
+
+@section Scripts {
+<script>
+    /* ============================================
+       STATE
+    ============================================ */
+    let currentShape     = 'round';
+    let currentTiers     = 1;
+    let baseTierPrice    = 1200;
+    let currentColor     = '#4A2E2B';
+    let currentFrostingName = 'Belgian Chocolate Fudge';
+    let addedToppings    = [];           // [{ id, symbol, price }]
+    let dragPayload      = null;         // { symbol, price }
+
+    /* ============================================
+       SIDEBAR CLICK CONTROLS
+    ============================================ */
+    function setShape(btn, shape) {
+        document.querySelectorAll('[data-shape]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentShape = shape;
+        document.getElementById('cakeStack').className = `cake-visual-stack shape-${shape}`;
+    }
+
+    function setTiers(btn, tiers, price) {
+        document.querySelectorAll('[data-tiers]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTiers   = tiers;
+        baseTierPrice  = price;
+        rebuildLayers();
+        recalcPrice();
+    }
+
+    function setFrosting(btn, color, name) {
+        document.querySelectorAll('.swatch-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentColor = color;
+        currentFrostingName = name;
+        document.querySelectorAll('.cake-layer').forEach(l => l.style.backgroundColor = color);
+        document.getElementById('frostingLabel').innerHTML =
+            `<i class="fas fa-palette text-danger me-1"></i>Frosting: <strong>${name}</strong>`;
+    }
+
+    /* ============================================
+       CAKE LAYER RENDERING
+    ============================================ */
+    function rebuildLayers() {
+        const stack = document.getElementById('cakeStack');
+        stack.innerHTML = '';
+        stack.className = `cake-visual-stack shape-${currentShape}`;
+        for (let i = 1; i <= currentTiers; i++) {
+            const div = document.createElement('div');
+            div.className = `cake-layer layer-tier-${i}`;
+            div.style.backgroundColor = currentColor;
+            stack.appendChild(div);
+        }
+    }
+
+    /* ============================================
+       DRAG — from palette
+    ============================================ */
+    function startDrag(e, symbol, price) {
+        dragPayload = { symbol, price };
+        e.dataTransfer.setData('text/plain', JSON.stringify({ symbol, price }));
+        e.dataTransfer.effectAllowed = 'copy';
+        e.currentTarget.classList.add('dragging');
+    }
+
+    function endDrag(e) {
+        e.currentTarget.classList.remove('dragging');
+    }
+
+    /* ============================================
+       DROP — onto canvas
+    ============================================ */
+    function onDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        document.getElementById('dropZone').classList.add('drag-over');
+    }
+
+    function onDragLeave(e) {
+        if (!document.getElementById('dropZone').contains(e.relatedTarget)) {
+            document.getElementById('dropZone').classList.remove('drag-over');
+        }
+    }
+
+    function onDrop(e) {
+        e.preventDefault();
+        document.getElementById('dropZone').classList.remove('drag-over');
+
+        let data = null;
+        try { data = JSON.parse(e.dataTransfer.getData('text/plain')); } catch {}
+        if (!data && dragPayload) data = dragPayload;
+        if (!data) return;
+
+        const zone = document.getElementById('dropZone');
+        const rect = zone.getBoundingClientRect();
+
+        const rawX = e.clientX - rect.left;
+        const rawY = e.clientY - rect.top;
+        const x = Math.max(10, Math.min(rect.width  - 40, rawX - 16));
+        const y = Math.max(10, Math.min(rect.height - 40, rawY - 16));
+
+        placeToppingAt(data.symbol, data.price, x, y);
+        dragPayload = null;
+    }
+
+    /* ============================================
+       PLACE TOPPING
+    ============================================ */
+    function placeToppingAt(symbol, price, x, y) {
+        const zone = document.getElementById('dropZone');
+
+        const id  = `top_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
+        const obj = { id, symbol, price };
+        addedToppings.push(obj);
+
+        const el = document.createElement('div');
+        el.className   = 'placed-topping-icon';
+        el.id          = id;
+        el.textContent = symbol;
+        el.style.left  = `${x}px`;
+        el.style.top   = `${y}px`;
+        el.title       = 'Click to remove this topping';
+
+        el.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            removeToppingById(id);
+        });
+
+        zone.appendChild(el);
+        document.getElementById('dropHint').classList.add('hidden');
+
+        recalcPrice();
+        updateToppingsSummary();
+    }
+
+    function removeToppingById(id) {
+        addedToppings = addedToppings.filter(t => t.id !== id);
+        const el = document.getElementById(id);
+        if (el) el.remove();
+        if (addedToppings.length === 0) {
+            document.getElementById('dropHint').classList.remove('hidden');
+        }
+        recalcPrice();
+        updateToppingsSummary();
+    }
+
+    function clearAllToppings() {
+        document.querySelectorAll('.placed-topping-icon').forEach(el => el.remove());
+        addedToppings = [];
+        document.getElementById('dropHint').classList.remove('hidden');
+        recalcPrice();
+        updateToppingsSummary();
+    }
+
+    /* ============================================
+       PRICE CALCULATION
+    ============================================ */
+    function getGrandTotal() {
+        const toppingTotal = addedToppings.reduce((s, t) => s + t.price, 0);
+        return baseTierPrice + toppingTotal;
+    }
+
+    function recalcPrice() {
+        const grand = getGrandTotal();
+        document.getElementById('livePriceLabel').textContent = `PKR ${grand.toLocaleString()}`;
+    }
+
+    /* ============================================
+       TOPPINGS SUMMARY BADGES
+    ============================================ */
+    function updateToppingsSummary() {
+        const summaryWrap = document.getElementById('toppingsSummary');
+        const list        = document.getElementById('toppingsList');
+        list.innerHTML    = '';
+
+        if (addedToppings.length === 0) {
+            summaryWrap.style.display = 'none';
+            return;
+        }
+
+        summaryWrap.style.display = 'block';
+
+        const counts = {};
+        addedToppings.forEach(t => {
+            counts[t.symbol] = (counts[t.symbol] || 0) + 1;
+        });
+
+        const seen = new Set();
+        addedToppings.forEach(t => {
+            if (seen.has(t.symbol)) return;
+            seen.add(t.symbol);
+            const badge = document.createElement('span');
+            badge.className   = 'badge bg-light text-dark border px-3 py-2 rounded-pill fs-6';
+            badge.textContent = `${t.symbol} ×${counts[t.symbol]}`;
+            list.appendChild(badge);
+        });
+    }
+
+    /* ============================================
+       MODAL OPEN & SUBMIT TO MY ORDERS
+    ============================================ */
+    function openOrderModal() {
+        const shapeFormatted = currentShape.charAt(0).toUpperCase() + currentShape.slice(1);
+        document.getElementById('modalShape').textContent = shapeFormatted;
+        document.getElementById('modalTiers').textContent = `${currentTiers} Tier${currentTiers > 1 ? 's' : ''} (${currentTiers} lb)`;
+        document.getElementById('modalFrosting').textContent = currentFrostingName;
+
+        const counts = {};
+        addedToppings.forEach(t => counts[t.symbol] = (counts[t.symbol] || 0) + 1);
+        const toppingSummaryStr = Object.keys(counts).map(sym => `${sym} ×${counts[sym]}`).join(', ');
+        document.getElementById('modalToppingsSummary').textContent = toppingSummaryStr || 'None';
+
+        const grand = getGrandTotal();
+        document.getElementById('modalTotalPrice').textContent = `PKR ${grand.toLocaleString()}`;
+
+        const modalEl = new bootstrap.Modal(document.getElementById('customCakeModal'));
+        modalEl.show();
+    }
+
+    async function confirmAndSubmitCustomOrder() {
+        const btn = document.getElementById('btnConfirmOrder');
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Placing Order...`;
+
+        const counts = {};
+        addedToppings.forEach(t => counts[t.symbol] = (counts[t.symbol] || 0) + 1);
+        const toppingSummaryStr = Object.keys(counts).map(sym => `${sym} ×${counts[sym]}`).join(', ');
+
+        const payload = {
+            shape: currentShape.charAt(0).toUpperCase() + currentShape.slice(1),
+            tiers: currentTiers,
+            frosting: currentFrostingName,
+            toppings: toppingSummaryStr,
+            totalPrice: getGrandTotal()
+        };
+
+        try {
+            const res = await fetch('/Customer/PlaceCustomCakeOrder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            } else if (data.success) {
+                window.location.href = '/Customer/MyOrders';
+            } else {
+                alert(data.message || 'Unable to place order.');
+                btn.disabled = false;
+                btn.innerHTML = `<span>Confirm & Place Order</span><i class="fas fa-arrow-right ms-2"></i>`;
+            }
+        } catch (err) {
+            console.error(err);
+            window.location.href = '/Customer/MyOrders';
+        }
+    }
+</script>
+}

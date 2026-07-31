@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    background-color: #FFF8F0 !important;
+    color: #3D231D !important;
+}
+
+.navbar-bg {
+    background: linear-gradient(135deg, #3D231D 0%, #5C3A21 100%) !important;
+    height: 70px !important;
+}
+
+.main-navbar {
+    background: transparent !important;
+}
+
+.main-sidebar {
+    background-color: #FFFFFF !important;
+    box-shadow: 0 4px 20px rgba(92, 58, 33, 0.08) !important;
+}
+
+.main-sidebar .sidebar-brand {
+    background: #FFF0F3 !important;
+    height: 70px !important;
+    line-height: 70px !important;
+}
+
+.main-sidebar .sidebar-brand a {
+    font-family: 'Playfair Display', serif !important;
+    color: #3D231D !important;
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+}
+
+.main-sidebar .sidebar-menu li a {
+    color: #5C3A21 !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    margin: 4px 15px !important;
+    padding: 10px 15px !important;
+    transition: all 0.3s ease !important;
+}
+
+.main-sidebar .sidebar-menu li.active a,
+.main-sidebar .sidebar-menu li a:hover {
+    background: #FFD6E0 !important;
+    color: #D81B60 !important;
+}
+
+.main-sidebar .sidebar-menu li a i {
+    color: #F4ACB7 !important;
+}
+
+.main-sidebar .sidebar-menu li.active a i {
+    color: #D81B60 !important;
+}
+
+.section-header {
+    background: #FFFFFF !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 15px rgba(92, 58, 33, 0.04) !important;
+    border: 1px solid #FFE5D9 !important;
+    padding: 20px 25px !important;
+    margin-bottom: 25px !important;
+}
+
+.section-header h1, .section-header div {
+    font-family: 'Playfair Display', serif !important;
+    color: #3D231D !important;
+    font-weight: 700 !important;
+}
+
+.card {
+    border-radius: 20px !important;
+    border: 1px solid #FFE5D9 !important;
+    box-shadow: 0 10px 25px rgba(92, 58, 33, 0.05) !important;
+    overflow: hidden;
+}
+
+.card-img-top {
+    height: 200px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #F4ACB7 0%, #D81B60 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(216, 27, 96, 0.3) !important;
+    border-radius: 25px !important;
+    font-weight: 700 !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #D81B60 0%, #AD1457 100%) !important;
+    transform: translateY(-2px);
+}

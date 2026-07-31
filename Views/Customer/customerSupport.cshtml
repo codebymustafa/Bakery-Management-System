@@ -1,0 +1,147 @@
+@{
+    ViewBag.Title = "Customer Support & AI Assistant";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="support-container">
+    <div class="chat-box">
+        <div class="chat-header">
+            <div class="chat-header-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div>
+                <h5>Royal Bakers AI Assistant</h5>
+                <p>Online 24/7 &bull; Ask me about our bakery menu, prices & custom orders 🍰</p>
+            </div>
+        </div>
+
+        <!-- Quick suggestion chips -->
+        <div class="suggestion-chips-container">
+            <div class="suggestion-chip" onclick="sendQuickMessage('What cake prices and sizes do you offer?')">
+                <i class="fas fa-birthday-cake text-danger"></i> Cake prices & sizes?
+            </div>
+            <div class="suggestion-chip" onclick="sendQuickMessage('How does custom cake ordering work?')">
+                <i class="fas fa-magic text-warning"></i> Custom cake info
+            </div>
+            <div class="suggestion-chip" onclick="sendQuickMessage('What are your delivery fees and time?')">
+                <i class="fas fa-truck-fast text-info"></i> Delivery fee & time?
+            </div>
+            <div class="suggestion-chip" onclick="sendQuickMessage('What are your bakery operating hours?')">
+                <i class="fas fa-clock text-success"></i> Store hours?
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message-row bot">
+                <div class="msg-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message bot">
+                    Hello! 👋 Welcome to <strong>Royal Bakers</strong>. How can I assist you today with our delicious bakery products or custom cake orders?
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="userMessage" placeholder="Ask a question about Royal Bakers..." autocomplete="off" />
+            <button onclick="sendMessage()" title="Send Message">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function sendQuickMessage(text) {
+            document.getElementById("userMessage").value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById("userMessage");
+            const message = input.value.trim();
+            if (message === "") return;
+
+            appendMessage("user", message);
+            input.value = "";
+
+            appendTyping();
+
+            try {
+                const response = await fetch('/Customer/GetBotReply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userMessage: message })
+                });
+
+                const data = await response.json();
+
+                removeTyping();
+                if (data && data.reply) {
+                    appendMessage("bot", data.reply);
+                } else {
+                    appendMessage("bot", "Sorry! I can only provide information related to this bakery and its services.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                removeTyping();
+                appendMessage("bot", "Sorry! I can only provide information related to this bakery and its services.");
+            }
+        }
+
+        function appendMessage(sender, text) {
+            const container = document.getElementById("chatMessages");
+            const rowDiv = document.createElement("div");
+            rowDiv.className = `message-row ${sender}`;
+
+            const avatarDiv = document.createElement("div");
+            avatarDiv.className = "msg-avatar";
+            avatarDiv.innerHTML = sender === "bot" ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>';
+
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${sender}`;
+            
+            // Format basic bold/newlines
+            let formattedText = text.replace(/\n/g, "<br>").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+            msgDiv.innerHTML = formattedText;
+
+            rowDiv.appendChild(avatarDiv);
+            rowDiv.appendChild(msgDiv);
+            container.appendChild(rowDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendTyping() {
+            const container = document.getElementById("chatMessages");
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "message-row bot";
+            rowDiv.id = "typing";
+
+            const avatarDiv = document.createElement("div");
+            avatarDiv.className = "msg-avatar";
+            avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
+
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "message bot fst-italic text-muted";
+            msgDiv.innerHTML = '<i class="fas fa-ellipsis-h me-2"></i>Royal Bakers AI is typing...';
+
+            rowDiv.appendChild(avatarDiv);
+            rowDiv.appendChild(msgDiv);
+            container.appendChild(rowDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTyping() {
+            const typing = document.getElementById("typing");
+            if (typing) typing.remove();
+        }
+
+        document.getElementById("userMessage").addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+}

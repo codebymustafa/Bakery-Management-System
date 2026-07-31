@@ -1,0 +1,298 @@
+/* Interactive Drag & Drop Custom Cake Builder Styling */
+
+.cake-builder-wrapper {
+    min-height: 85vh;
+    padding: 40px 0 60px;
+    background: radial-gradient(circle at 50% 0%, #FFF0F3 0%, #FFF8F0 100%);
+}
+
+.builder-container {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* Left Options Sidebar */
+.builder-sidebar {
+    background: #FFFFFF;
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 15px 45px rgba(92, 58, 33, 0.08);
+    border: 1px solid rgba(244, 172, 183, 0.5);
+    position: sticky;
+    top: 90px;
+}
+
+.builder-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #3D231D;
+    margin: 18px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.builder-section-title:first-child {
+    margin-top: 0;
+}
+
+.builder-option-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.builder-btn {
+    background: #FFF8F0;
+    border: 2px solid rgba(244, 172, 183, 0.4);
+    border-radius: 16px;
+    padding: 10px 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #5C3A21;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    user-select: none;
+}
+
+.builder-btn:hover {
+    background: #FFF0F3;
+    border-color: #F4ACB7;
+    transform: translateY(-1px);
+}
+
+.builder-btn.active {
+    background: linear-gradient(135deg, #FFF0F3, #FFD6E0);
+    border-color: #D81B60;
+    color: #D81B60;
+    box-shadow: 0 4px 14px rgba(216, 27, 96, 0.2);
+}
+
+/* Frosting Color Swatches */
+.color-swatch-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+
+.swatch-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 3px solid #FFFFFF;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+}
+
+.swatch-btn:hover {
+    transform: scale(1.1);
+}
+
+.swatch-btn.active {
+    transform: scale(1.15);
+    border-color: #D81B60;
+    box-shadow: 0 4px 15px rgba(216, 27, 96, 0.35);
+}
+
+.swatch-btn.active::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.85);
+}
+
+/* Draggable Toppings Palette */
+.toppings-palette {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.topping-chip {
+    background: #FFFFFF;
+    border: 1.5px dashed #F4ACB7;
+    border-radius: 14px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #3D231D;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.topping-chip:hover {
+    background: #FFF0F3;
+    transform: translateY(-2px);
+    border-color: #D81B60;
+    box-shadow: 0 4px 12px rgba(216, 27, 96, 0.12);
+}
+
+.topping-chip:active,
+.topping-chip.dragging {
+    cursor: grabbing;
+    opacity: 0.6;
+    transform: scale(0.95);
+}
+
+/* Center Canvas Visualizer */
+.builder-canvas-stage {
+    background: #FFFFFF;
+    border-radius: 28px;
+    padding: 30px 35px;
+    box-shadow: 0 15px 45px rgba(92, 58, 33, 0.08);
+    border: 1px solid rgba(244, 172, 183, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 600px;
+    position: relative;
+    width: 100%;
+}
+
+/* THE DROP ZONE — this is where toppings land */
+.stage-drop-zone {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;   /* CRITICAL: absolutely positioned toppings go here */
+    border: 2.5px dashed rgba(244, 172, 183, 0.5);
+    border-radius: 24px;
+    background: radial-gradient(circle at 50% 60%, #FFFFFF 50%, #FFF8F0 100%);
+    /* NO overflow hidden — toppings must be visible anywhere on the canvas */
+    overflow: visible;
+    transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.stage-drop-zone.drag-over {
+    border-color: #D81B60;
+    background: radial-gradient(circle at 50% 60%, #FFF0F3 40%, #FFE5D9 100%);
+    border-style: solid;
+}
+
+/* The layered cake graphic — sits centered inside the drop zone */
+.cake-visual-stack {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    transition: all 0.4s ease;
+    /* pointer-events: none so drag events pass through to the drop zone */
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Individual Cake Layers */
+.cake-layer {
+    background-color: #4A2E2B;
+    border: 5px solid rgba(255,255,255,0.85);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 -4px 0 rgba(0,0,0,0.12);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+/* Shape variants */
+.shape-round  .cake-layer { border-radius: 50px; }
+.shape-square .cake-layer { border-radius: 10px; }
+.shape-heart  .cake-layer { border-radius: 50% 50% 22% 22%; }
+
+/* Layer sizes — wider at bottom, narrower at top */
+.layer-tier-1 { width: 230px; height: 85px; }
+.layer-tier-2 { width: 175px; height: 74px; }
+.layer-tier-3 { width: 120px; height: 62px; }
+
+/* =============================================
+   PLACED TOPPINGS — absolutely positioned on drop zone
+   ============================================= */
+.placed-topping-icon {
+    position: absolute;
+    font-size: 1.7rem;
+    z-index: 20;
+    cursor: pointer;
+    line-height: 1;
+    user-select: none;
+    animation: popIn 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+    transition: transform 0.15s ease;
+}
+
+.placed-topping-icon:hover {
+    transform: scale(1.3);
+    filter: drop-shadow(0 4px 8px rgba(216, 27, 96, 0.3));
+}
+
+@keyframes popIn {
+    0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+    70%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg);  opacity: 1; }
+}
+
+/* =============================================
+   LIVE PRICING FOOTER
+   ============================================= */
+.builder-price-footer {
+    width: 100%;
+    background: linear-gradient(135deg, #FFF0F3 0%, #FFE5D9 100%);
+    border-radius: 20px;
+    padding: 18px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #F4ACB7;
+    margin-top: 22px;
+    gap: 16px;
+}
+
+.builder-price-footer h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #D81B60;
+    margin: 0;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 991px) {
+    .builder-container {
+        grid-template-columns: 1fr;
+    }
+    .builder-sidebar {
+        position: static;
+    }
+    .stage-drop-zone {
+        height: 350px;
+    }
+}
+
+@media (max-width: 576px) {
+    .toppings-palette {
+        grid-template-columns: 1fr;
+    }
+    .builder-price-footer {
+        flex-direction: column;
+        text-align: center;
+    }
+}

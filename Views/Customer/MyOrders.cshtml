@@ -1,0 +1,107 @@
+@model List<Bakery_Management_System.Models.Order>
+@{
+    ViewBag.Title = "My Orders";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="page-hero-banner">
+    <div class="container">
+        <h1>My Order History</h1>
+        <p class="lead text-muted mb-0">Track all your past and active bakery orders</p>
+    </div>
+</div>
+
+<div class="container py-5">
+
+    @if (TempData["OrderSuccess"] != null)
+    {
+        <div class="alert alert-success rounded-4 shadow-sm mb-4">
+            <i class="fas fa-check-circle me-2"></i>@TempData["OrderSuccess"]
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="d-flex flex-column gap-4">
+            @foreach (var order in Model)
+            {
+                var total       = order.OrderItems.Sum(i => i.Price);
+                var isConfirmed = order.OrderStatus == "Confirmed";
+                var isPending   = order.OrderStatus == "Pending";
+                var badgeCls    = isConfirmed ? "bg-success" : (isPending ? "bg-warning text-dark" : "bg-info text-dark");
+                var borderColor = isConfirmed ? "#4CAF50" : (isPending ? "#FFC107" : "#17a2b8");
+
+                <div class="card border-0 shadow-sm rounded-4 p-4"
+                     style="border-left: 5px solid @borderColor !important;">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                        <div>
+                            <h5 class="fw-bold mb-1" style="font-family:'Playfair Display',serif;">
+                                Order #@order.OrderId
+                            </h5>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Placed on @(order.OrderDate?.ToString("dd MMMM yyyy, hh:mm tt") ?? "Recently")
+                            </small>
+                        </div>
+                        <span class="badge @badgeCls px-3 py-2 rounded-pill fs-6">
+                            <i class="fas fa-circle me-1" style="font-size:.6rem;"></i>@(order.OrderStatus ?? "Processing")
+                        </span>
+                    </div>
+
+                    @if (order.OrderItems.Any())
+                    {
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm table-borderless align-middle mb-0">
+                                <thead style="background:#FFF8F0; border-radius:8px;">
+                                    <tr>
+                                        <th class="small text-muted fw-bold ps-3">Item</th>
+                                        <th class="small text-muted fw-bold">Qty</th>
+                                        <th class="small text-muted fw-bold">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in order.OrderItems)
+                                    {
+                                        <tr>
+                                            <td class="ps-3 small fw-semibold">
+                                                @(item.Product?.ProductName ?? "Bakery Item")
+                                            </td>
+                                            <td class="small text-muted">×@item.Quantity</td>
+                                            <td class="small fw-bold text-danger">PKR @item.Price.ToString("N0")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="small text-muted">
+                            <i class="fas fa-motorcycle me-1 text-danger"></i>Express Delivery &nbsp;|&nbsp;
+                            <strong class="text-dark">@order.OrderItems.Sum(i => i.Quantity) item@(order.OrderItems.Sum(i => i.Quantity) == 1 ? "" : "s")</strong>
+                        </div>
+                        <div class="text-end">
+                            <span class="small text-muted d-block">Order Total</span>
+                            <span class="fw-bold text-danger fs-5">PKR @total.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="card border-0 shadow-sm rounded-4 p-5 mx-auto" style="max-width:480px; background:#FFFFFF;">
+                <i class="fas fa-receipt opacity-25 text-danger mb-4" style="font-size:5rem;"></i>
+                <h3 class="fw-bold text-dark mb-2" style="font-family:'Playfair Display',serif;">No Orders Yet</h3>
+                <p class="text-muted mb-4">You haven't placed any orders with Royal Bakers yet. Explore our shop and treat yourself!</p>
+                <a asp-controller="Customer" asp-action="Shop"
+                   class="btn btn-danger rounded-pill px-5 py-3 fw-bold shadow">
+                    <i class="fas fa-store me-2"></i>Browse & Order Now
+                </a>
+            </div>
+        </div>
+    }
+</div>

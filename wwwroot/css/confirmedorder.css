@@ -1,0 +1,41 @@
+﻿.order-card {
+    background: #fdfdfd;
+    border: 2px solid #28a745; /* Confirmed color theme */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    transition: box-shadow 0.3s ease;
+}
+
+    .order-card:hover {
+        box-shadow: 0 10px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .order-card h5 {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+.table th {
+    background-color: #f1f1f1;
+    color: #333;
+    font-weight: 600;
+}
+
+.table td,
+.table th {
+    vertical-align: middle !important;
+}
+
+.table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Badge for confirmed status */
+.badge-success {
+    background-color: #28a745;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 20px;
+}

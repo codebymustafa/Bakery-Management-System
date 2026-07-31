@@ -1,0 +1,119 @@
+@model Bakery_Management_System.Models.Product
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var categories = ViewBag.Categories as List<Bakery_Management_System.Models.ProductCategory> ?? new List<Bakery_Management_System.Models.ProductCategory>();
+}
+
+<section class="section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-header mb-0">
+            <i class="ion ion-plus-circled text-danger mr-2"></i>Add New Product
+        </h1>
+        <a asp-action="ProductList" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Products
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="font-weight-bold text-dark mb-0"><i class="fas fa-box text-danger mr-2"></i>Product Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="AddProduct" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row">
+                            <!-- Left Column: Fields -->
+                            <div class="col-md-7">
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold text-dark">Product Name <span class="text-danger">*</span></label>
+                                    <input asp-for="ProductName" class="form-control form-control-lg" placeholder="e.g. Royal Belgian Chocolate Cake" required />
+                                    <span asp-validation-for="ProductName" class="text-danger small"></span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="font-weight-bold text-dark">Category <span class="text-danger">*</span></label>
+                                            <select asp-for="CategoryId" class="form-control" required>
+                                                <option value="">-- Select Category --</option>
+                                                @foreach (var cat in categories)
+                                                {
+                                                    <option value="@cat.CategoryId">@cat.CategoryName</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="font-weight-bold text-dark">Price (PKR) <span class="text-danger">*</span></label>
+                                            <input asp-for="ProductPrice" type="number" step="0.01" min="1" class="form-control" placeholder="1200" required />
+                                            <span asp-validation-for="ProductPrice" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold text-dark">Initial Stock Quantity <span class="text-danger">*</span></label>
+                                    <input asp-for="ProductQuantity" type="number" min="0" class="form-control" value="20" required />
+                                    <span asp-validation-for="ProductQuantity" class="text-danger small"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold text-dark">Product Description</label>
+                                    <textarea asp-for="ProductDescription" class="form-control" rows="4" placeholder="Describe ingredients, taste, and bakery notes..."></textarea>
+                                    <span asp-validation-for="ProductDescription" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Image Upload & Live Preview -->
+                            <div class="col-md-5">
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold text-dark">Product Image</label>
+                                    <div class="border rounded-3 p-3 text-center bg-light">
+                                        <div class="mb-3">
+                                            <img id="imgPreview" src="@Url.Content("~/img/cake_card.jpg")" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 220px; object-fit: cover;" />
+                                        </div>
+                                        <div class="custom-file text-left">
+                                            <input type="file" name="ProductImageFile" class="custom-file-input" id="customFile" accept="image/*" onchange="previewImage(this)">
+                                            <label class="custom-file-label" for="customFile" id="fileLabel">Choose Image File...</label>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">Supported formats: JPG, PNG, WEBP. Max 5MB.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="ProductList" class="btn btn-light rounded-pill px-4 mr-2">Cancel</a>
+                            <button type="submit" class="btn btn-danger rounded-pill px-5 font-weight-bold shadow">
+                                <i class="fas fa-check-circle mr-1"></i> Save Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('imgPreview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+            document.getElementById('fileLabel').textContent = input.files[0].name;
+        }
+    }
+</script>
+}

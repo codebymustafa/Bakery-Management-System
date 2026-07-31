@@ -1,0 +1,106 @@
+﻿body {
+    background: #fff0f5;
+    font-family: "Georgia", serif;
+    font-style: italic;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: #ffcece;
+    border: 2px solid black;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.form-title {
+    text-align: center;
+    color: #5B5B5B;
+    text-decoration: underline 2px #a05252 wavy;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.btn-submit {
+    background-color: #ff999c;
+    border: none;
+    color: black;
+    border-radius: 8px;
+    transition: 0.3s ease;
+}
+
+    .btn-submit:hover {
+        background-color: #d87070;
+    }
+
+label {
+    font-size: 100% !important;
+    font-weight: 600;
+    font-style: italic;
+    font-family: "Georgia", serif;
+    color: black !important;
+}
+
+.form-control {
+    border-radius: 8px;
+}
+
+/* Quantity Styling */
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 200px;
+}
+
+.qty-input {
+    width: 80px;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid black !important;
+}
+
+.btn-qty {
+    background-color: #ff999c;
+    border: none;
+    color: black;
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    transition: 0.2s ease;
+}
+
+    .btn-qty:hover {
+        background-color: #ff999c;
+        cursor: pointer;
+    }
+
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.6em;
+    font-size: 1em;
+    border: 1.5px solid #a05252;
+    border-radius: 8px;
+    background-color: #fff8f8;
+    font-family: "Georgia", serif;
+    font-style: italic;
+    color: #333;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="file"]:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #ff999c;
+        background-color: #fff0f5;
+    }

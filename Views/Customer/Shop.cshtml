@@ -1,0 +1,239 @@
+@model List<Bakery_Management_System.Models.Product>
+@{
+    ViewBag.Title = "Bakery Shop & Menu";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    var categories = ViewBag.Categories as List<Bakery_Management_System.Models.ProductCategory>
+                     ?? new List<Bakery_Management_System.Models.ProductCategory>();
+}
+
+<div class="page-hero-banner">
+    <div class="container">
+        <h1>Fresh Bakery Shop & Menu</h1>
+        <p class="lead text-muted mb-0">Browse artisan cakes, crispy cookies, sourdough breads, and sweet treats — priced in PKR.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+
+        <!-- ===== SIDEBAR FILTERS ===== -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top:90px; background:#fff; border:1px solid #FFE5D9!important;">
+                <h5 class="fw-bold mb-4 text-dark" style="font-family:'Playfair Display',serif;">
+                    <i class="fas fa-sliders text-danger me-2"></i>Filter Products
+                </h5>
+
+                <!-- Search -->
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">Search Item</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted small"></i></span>
+                        <input type="text" id="shopSearch" class="form-control bg-light border-start-0"
+                               placeholder="e.g. Chocolate Cake..." oninput="filterProducts()">
+                    </div>
+                </div>
+
+                <!-- Category Buttons (Dynamic from DB) -->
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted d-block">Category</label>
+                    <div class="d-flex flex-column gap-2">
+                        <button type="button" class="btn btn-sm btn-danger text-start rounded-pill px-3 fw-semibold cat-btn active" data-cat="All" onclick="selectCat(this,'All')">
+                            <i class="fas fa-border-all me-2"></i>All Categories
+                        </button>
+                        @foreach (var cat in categories)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-secondary text-start rounded-pill px-3 fw-semibold cat-btn" data-cat="@cat.CategoryName" onclick="selectCat(this,'@cat.CategoryName')">
+                                <i class="fas fa-cookie-bite me-2 text-danger"></i>@cat.CategoryName
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Price Range -->
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted d-block">Price Range (PKR)</label>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <input type="number" id="minPrice" class="form-control form-control-sm text-center" placeholder="Min" value="0" min="0" oninput="filterProducts()">
+                        <span class="text-muted small">–</span>
+                        <input type="number" id="maxPrice" class="form-control form-control-sm text-center" placeholder="Max" value="3500" min="0" oninput="filterProducts()">
+                    </div>
+                    <input type="range" class="form-range" id="priceSlider" min="0" max="3500" step="50" value="3500" oninput="syncSlider(this.value)">
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>PKR 0</span>
+                        <span id="sliderMaxLabel" class="fw-bold text-danger">PKR 3,500</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-sm btn-outline-danger w-100 rounded-pill fw-semibold" onclick="resetFilters()">
+                    <i class="fas fa-arrows-rotate me-1"></i>Reset Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== PRODUCT GRID (all dynamic from DB) ===== -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span id="productCountLabel" class="text-muted fw-semibold small">
+                    Showing @(Model?.Count ?? 0) bakery item@(Model?.Count == 1 ? "" : "s")
+                </span>
+            </div>
+
+            <div class="row g-4" id="productGrid">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var p in Model)
+                    {
+                        var catName = p.Category?.CategoryName ?? "General";
+                        var img     = !string.IsNullOrEmpty(p.ProductImage) ? p.ProductImage : "/img/cake_card.jpg";
+                        <div class="col-sm-6 col-xl-4 product-card-wrapper"
+                             data-name="@p.ProductName.ToLower()"
+                             data-cat="@catName"
+                             data-price="@((int)p.ProductPrice)">
+                            <div class="product-bakery-card h-100 d-flex flex-column">
+                                <div class="product-img-box">
+                                    <img src="@Url.Content("~" + img)" alt="@p.ProductName" loading="lazy">
+                                    <span class="product-badge">@catName</span>
+                                </div>
+                                <div class="px-3 pt-1 pb-3 d-flex flex-column flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="text-warning small"><i class="fas fa-star"></i> 4.9</span>
+                                        <span class="product-price">PKR @p.ProductPrice.ToString("N0")</span>
+                                    </div>
+                                    <h5 class="product-title mb-1">@p.ProductName</h5>
+                                    <p class="text-muted small mb-3 flex-grow-1">@p.ProductDescription</p>
+                                    <button class="btn btn-danger w-100 rounded-pill fw-bold py-2"
+                                            onclick="addToCart(@p.ProductId)">
+                                        <i class="fas fa-shopping-bag me-2"></i>Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info rounded-4 text-center py-5">
+                            <i class="fas fa-cookie-bite fs-1 d-block mb-3 text-muted"></i>
+                            No products found in the database. Please check the seeder.
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- No results message -->
+            <div id="noResultsMsg" class="py-5 text-center" style="display:none;">
+                <div class="card border-0 shadow-sm rounded-4 p-5" style="background:#FFF0F3;">
+                    <i class="fas fa-cookie-bite fs-1 text-danger opacity-50 mb-3 d-block"></i>
+                    <h5 class="fw-bold text-dark">No Matching Items Found</h5>
+                    <p class="text-muted small">Try different keywords, category, or price range.</p>
+                    <button class="btn btn-sm btn-danger rounded-pill px-4 mt-2" onclick="resetFilters()">Clear Filters</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let activeCat = 'All';
+
+    function selectCat(btn, cat) {
+        document.querySelectorAll('.cat-btn').forEach(b => {
+            b.classList.remove('btn-danger', 'active');
+            b.classList.add('btn-outline-secondary');
+        });
+        btn.classList.remove('btn-outline-secondary');
+        btn.classList.add('btn-danger', 'active');
+        activeCat = cat;
+        filterProducts();
+    }
+
+    function syncSlider(val) {
+        document.getElementById('maxPrice').value = val;
+        document.getElementById('sliderMaxLabel').textContent = `PKR ${Number(val).toLocaleString()}`;
+        filterProducts();
+    }
+
+    function filterProducts() {
+        const q        = document.getElementById('shopSearch').value.toLowerCase().trim();
+        const minP     = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxP     = parseFloat(document.getElementById('maxPrice').value) || 999999;
+        const cards    = document.querySelectorAll('.product-card-wrapper');
+        let   visible  = 0;
+
+        cards.forEach(card => {
+            const matchName = !q || card.dataset.name.includes(q);
+            const matchCat  = activeCat === 'All' || card.dataset.cat === activeCat;
+            const price     = parseFloat(card.dataset.price);
+            const matchP    = price >= minP && price <= maxP;
+
+            if (matchName && matchCat && matchP) {
+                card.style.display = '';
+                visible++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        document.getElementById('noResultsMsg').style.display = visible === 0 ? 'block' : 'none';
+        document.getElementById('productCountLabel').textContent =
+            `Showing ${visible} bakery item${visible === 1 ? '' : 's'}`;
+    }
+
+    function resetFilters() {
+        document.getElementById('shopSearch').value = '';
+        document.getElementById('minPrice').value   = 0;
+        document.getElementById('maxPrice').value   = 3500;
+        document.getElementById('priceSlider').value = 3500;
+        document.getElementById('sliderMaxLabel').textContent = 'PKR 3,500';
+        const allBtn = document.querySelector('.cat-btn[data-cat="All"]');
+        if (allBtn) selectCat(allBtn, 'All');
+    }
+
+    async function addToCart(productId) {
+        try {
+            const res  = await fetch('/Customer/AddToCart', {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body   : `productId=${productId}&quantity=1`
+            });
+            const data = await res.json();
+
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else if (data.success) {
+                showToast(data.message || 'Item added to cart!', 'success');
+            } else {
+                showToast(data.message || 'Could not add item.', 'error');
+            }
+        } catch (err) {
+            showToast('Item added to cart!', 'success');
+        }
+    }
+
+    function showToast(msg, type) {
+        // Simple toast notification
+        const toast = document.createElement('div');
+        toast.textContent = msg;
+        toast.style.cssText = `
+            position:fixed; bottom:25px; right:25px; z-index:9999;
+            background:${type === 'success' ? '#D81B60' : '#c0392b'};
+            color:white; padding:14px 24px; border-radius:14px;
+            font-weight:700; font-size:.95rem; box-shadow:0 8px 25px rgba(0,0,0,.2);
+            animation: slideInToast .3s ease;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .4s'; }, 2800);
+        setTimeout(() => toast.remove(), 3300);
+    }
+</script>
+<style>
+    @@keyframes slideInToast {
+        from { transform: translateY(30px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+    .product-title { font-size:1rem; font-family:'Playfair Display',serif; font-weight:700; color:#3D231D; }
+    .product-price { font-size:1rem; font-family:'Playfair Display',serif; font-weight:700; color:#D81B60; }
+</style>
+}

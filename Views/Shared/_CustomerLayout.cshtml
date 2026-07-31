@@ -1,0 +1,197 @@
+@using Bakery_Management_System.Data
+@inject BakeryDbContext Db
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var userEmail = Context.Session.GetString("UserEmail");
+    var isAuthenticated = !string.IsNullOrEmpty(userEmail) && userEmail != "GuestUser";
+    var cartItemCount = 0;
+
+    if (isAuthenticated)
+    {
+        var currentUser = Db.Users.FirstOrDefault(u => u.Username == userEmail);
+        if (currentUser != null)
+        {
+            cartItemCount = Db.Carts
+                .Where(c => c.UserId == currentUser.UserId)
+                .Sum(c => (int?)c.Quantity) ?? 0;
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title Royal Bakers &mdash; Freshly Baked Delights</title>
+
+    <link rel="icon" type="image/png" href="@Url.Content("~/favicon.ico")" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom Customer CSS -->
+    <link rel="stylesheet" href="@Url.Content("~/css/CustomerCSS/layout.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/CustomerCSS/customersupport.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/CustomerCSS/login.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/CustomerCSS/customorder.css")">
+</head>
+<body>
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-bakery">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand" asp-controller="Customer" asp-action="Index">
+                    <img src="@Url.Content("~/img/logo.png")" alt="Royal Bakers Logo" class="logo">
+                    <span>Royal Bakers</span>
+                </a>
+
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#bakeryNavbar" aria-controls="bakeryNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars fs-4 text-dark"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="bakeryNavbar">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "Index" ? "active" : "") d-flex align-items-center gap-2" asp-controller="Customer" asp-action="Index">
+                                <i class="fas fa-home"></i> <span>Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "Shop" ? "active" : "") d-flex align-items-center gap-2" asp-controller="Customer" asp-action="Shop">
+                                <i class="fas fa-store"></i> <span>Shop</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "customOrder" ? "active" : "") d-flex align-items-center gap-2" asp-controller="Customer" asp-action="customOrder">
+                                <i class="fas fa-birthday-cake"></i> <span>Custom Cake</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentAction == "MyOrders" ? "active" : "") d-flex align-items-center gap-2" asp-controller="Customer" asp-action="MyOrders">
+                                <i class="fas fa-receipt"></i> <span>My Orders</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <a class="icon-large @(currentAction == "Cart" ? "active" : "")" asp-controller="Customer" asp-action="Cart" title="Shopping Cart">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span class="cart-badge">@cartItemCount</span>
+                        </a>
+
+                        <a class="icon-large @(currentAction == "customerSupport" ? "active" : "")" asp-controller="Customer" asp-action="customerSupport" title="Customer Support">
+                            <i class="fas fa-headset"></i>
+                        </a>
+
+                        @if (isAuthenticated)
+                        {
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle user-dropdown-btn d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle fs-5 text-danger"></i>
+                                    <span class="text-truncate" style="max-width: 150px;">@userEmail</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                                    <li>
+                                        <div class="dropdown-item-text fw-bold text-dark text-truncate" style="max-width: 220px;">
+                                            <i class="fas fa-envelope me-2 text-muted"></i>@userEmail
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    @if (Context.Session.GetString("UserRole") == "ADMIN")
+                                    {
+                                        <li>
+                                            <a class="dropdown-item text-primary fw-semibold" asp-controller="Admin" asp-action="Dashboard">
+                                                <i class="fas fa-crown me-2"></i>Admin Panel
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    <li>
+                                        <form method="post" asp-controller="Customer" asp-action="Logout">
+                                            <button type="submit" class="dropdown-item text-danger fw-semibold w-100 text-start border-0 bg-transparent">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-danger rounded-pill px-4 py-2 fw-semibold" asp-controller="Customer" asp-action="login">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="bakery-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 footer-brand">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <img src="@Url.Content("~/img/logo.png")" alt="Logo" style="height: 44px;">
+                        <h4 class="m-0">Royal Bakers</h4>
+                    </div>
+                    <p class="text-muted mb-3">Crafting unforgettable moments with artisanal passion, premium organic ingredients, and freshly baked goodness every single day.</p>
+                    <div class="d-flex">
+                        <a href="#" class="social-icon-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon-btn" title="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+                        <a href="#" class="social-icon-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 footer-links">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a asp-controller="Customer" asp-action="Index"><i class="fas fa-chevron-right me-1 small"></i> Home</a></li>
+                        <li><a asp-controller="Customer" asp-action="Shop"><i class="fas fa-chevron-right me-1 small"></i> Bakery Menu</a></li>
+                        <li><a asp-controller="Customer" asp-action="customOrder"><i class="fas fa-chevron-right me-1 small"></i> Custom Cake</a></li>
+                        <li><a asp-controller="Customer" asp-action="customerSupport"><i class="fas fa-chevron-right me-1 small"></i> AI Support</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 footer-hours">
+                    <h5>Bakery Hours</h5>
+                    <ul class="list-unstyled text-muted small m-0 p-0">
+                        <li class="mb-2"><span class="fw-semibold text-secondary">Mon - Fri:</span> <strong class="text-dark ms-1">7:00 AM - 9:00 PM</strong></li>
+                        <li class="mb-2"><span class="fw-semibold text-secondary">Saturday:</span> <strong class="text-dark ms-1">8:00 AM - 10:00 PM</strong></li>
+                        <li class="mb-2"><span class="fw-semibold text-secondary">Sunday:</span> <strong class="text-dark ms-1">8:00 AM - 8:00 PM</strong></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 footer-contact">
+                    <h5>Visit Our Store</h5>
+                    <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i>124 Royal Avenue, Sweet Street, City</p>
+                    <p class="text-muted small mb-2"><i class="fas fa-phone text-danger me-2"></i>+1 (800) 555-ROYAL</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center">
+                <p class="m-0">&copy; 2026 <strong>Royal Bakers</strong>. All Rights Reserved. Crafted with <i class="fas fa-heart text-danger"></i> for bakery lovers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

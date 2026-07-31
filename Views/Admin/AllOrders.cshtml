@@ -1,0 +1,174 @@
+@model List<Bakery_Management_System.Models.Order>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string currentStatus = ViewBag.CurrentStatus as string ?? "";
+    string currentSearch = ViewBag.CurrentSearch as string ?? "";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int totalCount = ViewBag.TotalCount ?? 0;
+}
+
+<section class="section">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="section-header mb-0">
+                <i class="ion ion-bag text-danger mr-2"></i>Order Management Pipeline
+            </h1>
+            <small class="text-muted">Total @totalCount orders found in system pipeline.</small>
+        </div>
+    </div>
+
+    <!-- Status Tabs & Filter -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body p-3">
+            <form method="get" asp-action="AllOrders" class="form-row align-items-center">
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white border-right-0"><i class="fas fa-search text-muted"></i></span>
+                        </div>
+                        <input type="text" name="search" class="form-control border-left-0" placeholder="Search order # or customer email..." value="@currentSearch" />
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <select name="statusFilter" class="form-control">
+                        <option value="">-- All Order Statuses --</option>
+                        <option value="Pending" selected="@(currentStatus == "Pending")">Pending</option>
+                        <option value="Confirmed" selected="@(currentStatus == "Confirmed")">Confirmed</option>
+                        <option value="Preparing" selected="@(currentStatus == "Preparing")">Preparing</option>
+                        <option value="Out for Delivery" selected="@(currentStatus == "Out for Delivery")">Out for Delivery</option>
+                        <option value="Delivered" selected="@(currentStatus == "Delivered")">Delivered</option>
+                        <option value="Cancelled" selected="@(currentStatus == "Cancelled")">Cancelled / Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark btn-block font-weight-bold rounded-pill">Filter Orders</button>
+                    @if (!string.IsNullOrEmpty(currentSearch) || !string.IsNullOrEmpty(currentStatus))
+                    {
+                        <a asp-action="AllOrders" class="btn btn-outline-secondary ml-2 rounded-pill" title="Reset Filters"><i class="fas fa-undo"></i></a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Pipeline Table -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Order #</th>
+                                <th>Order Date</th>
+                                <th>Customer</th>
+                                <th>Items Ordered</th>
+                                <th>Grand Total</th>
+                                <th>Current Status</th>
+                                <th class="text-right">Update Pipeline Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                var grandTotal = order.OrderItems.Sum(oi => oi.Price);
+                                string status = order.OrderStatus ?? "Pending";
+                                string badgeClass = status switch
+                                {
+                                    "Pending" => "badge-warning",
+                                    "Confirmed" => "badge-info",
+                                    "Preparing" => "badge-primary",
+                                    "Out for Delivery" => "badge-secondary",
+                                    "Delivered" => "badge-success",
+                                    "Completed" => "badge-success",
+                                    _ => "badge-danger"
+                                };
+
+                                <tr>
+                                    <td class="font-weight-bold text-danger">#@order.OrderId</td>
+                                    <td>
+                                        <small class="text-dark font-weight-bold d-block">
+                                            @(order.OrderDate?.ToString("dd MMM yyyy") ?? "N/A")
+                                        </small>
+                                        <small class="text-muted">
+                                            @(order.OrderDate?.ToString("hh:mm tt") ?? "")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark font-weight-bold">@(order.User?.Username ?? $"User #{order.UserId}")</strong>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" data-toggle="collapse" data-target="#items_@order.OrderId">
+                                            <i class="fas fa-shopping-basket mr-1"></i> @order.OrderItems.Count Item(s)
+                                        </button>
+
+                                        <!-- Collapsible Itemized Breakdown -->
+                                        <div class="collapse mt-2" id="items_@order.OrderId">
+                                            <div class="card card-body p-2 bg-light border-0 small">
+                                                @foreach (var item in order.OrderItems)
+                                                {
+                                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                                        <span>@(item.Product?.ProductName ?? "Custom Cake Item") (x@item.Quantity)</span>
+                                                        <strong class="text-dark">PKR @item.Price.ToString("N0")</strong>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="font-weight-bold text-success fs-6">PKR @grandTotal.ToString("N0")</td>
+                                    <td>
+                                        <span class="badge @badgeClass px-3 py-1 font-weight-bold">@status</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <form asp-action="UpdateOrderStatus" method="post" class="d-inline-flex gap-2">
+                                            <input type="hidden" name="id" value="@order.OrderId" />
+                                            <select name="newStatus" class="form-control form-control-sm border-danger" style="max-width: 150px;" onchange="this.form.submit()">
+                                                <option value="Pending" selected="@(status == "Pending")">Pending</option>
+                                                <option value="Confirmed" selected="@(status == "Confirmed")">Confirmed</option>
+                                                <option value="Preparing" selected="@(status == "Preparing")">Preparing</option>
+                                                <option value="Out for Delivery" selected="@(status == "Out for Delivery")">Out for Delivery</option>
+                                                <option value="Delivered" selected="@(status == "Delivered" || status == "Completed")">Delivered</option>
+                                                <option value="Cancelled" selected="@(status == "Cancelled" || status == "Rejected")">Cancelled</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <div class="p-3 bg-light d-flex justify-content-between align-items-center flex-wrap">
+                        <small class="text-muted">Page @currentPage of @totalPages (@totalCount Orders)</small>
+                        <ul class="pagination pagination-sm m-0">
+                            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                                <a class="page-link" asp-action="AllOrders" asp-route-page="@(currentPage - 1)" asp-route-search="@currentSearch" asp-route-statusFilter="@currentStatus">&laquo; Prev</a>
+                            </li>
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="AllOrders" asp-route-page="@i" asp-route-search="@currentSearch" asp-route-statusFilter="@currentStatus">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                                <a class="page-link" asp-action="AllOrders" asp-route-page="@(currentPage + 1)" asp-route-search="@currentSearch" asp-route-statusFilter="@currentStatus">Next &raquo;</a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="p-5 text-center text-muted">
+                    <i class="fas fa-shopping-bag fs-1 text-secondary mb-3 d-block"></i>
+                    <h5>No orders found matching status filter.</h5>
+                </div>
+            }
+        </div>
+    </div>
+</section>

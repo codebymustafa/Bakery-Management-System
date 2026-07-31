@@ -1,0 +1,124 @@
+@{
+    ViewBag.Title = "Welcome to Royal Bakers - Login & Signup";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="auth-page">
+    <div class="auth-card-container">
+        <div class="auth-header">
+            <div class="brand-icon">
+                <img src="@Url.Content("~/img/logo.png")" alt="Logo">
+            </div>
+            <h3>Royal Bakers</h3>
+            <p>Freshly baked happiness, delivered with love</p>
+        </div>
+
+        <div class="slide-controls">
+            <input type="radio" name="slide" id="login" checked>
+            <input type="radio" name="slide" id="signup">
+            <label for="login" class="slide login">Login</label>
+            <label for="signup" class="slide signup">Signup</label>
+            <div class="slider-tab"></div>
+        </div>
+
+        <div class="form-container">
+            <div class="form-inner" id="formInner">
+                <!-- Login Form (Email authentication) -->
+                <form asp-action="login" asp-controller="Customer" method="post" class="login-form">
+                    <div class="form-group-bakery">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" placeholder="name@example.com" required autocomplete="email" />
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group-bakery">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" placeholder="Enter your password" required autocomplete="current-password" />
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-auth-submit">
+                        <span>Login to Account</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger mt-3 py-2 px-3 rounded-3 text-center small border-0 shadow-sm" style="background-color: #FFEBEE; color: #C62828;">
+                            <i class="fas fa-exclamation-circle me-1"></i> @ViewBag.Error
+                        </div>
+                    }
+
+                    <div class="auth-footer-text">
+                        Not a member yet? <a href="#" id="toSignupLink">Create an account</a>
+                    </div>
+                </form>
+
+                <!-- Signup Form (Email registration) -->
+                <form asp-action="signup" asp-controller="Customer" method="post" class="signup-form">
+                    <div class="form-group-bakery">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" placeholder="name@example.com" required autocomplete="email" />
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group-bakery">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" placeholder="Choose a strong password" required autocomplete="new-password" />
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-auth-submit">
+                        <span>Create Customer Account</span>
+                        <i class="fas fa-heart me-1"></i>
+                    </button>
+
+                    <div class="auth-footer-text">
+                        Already have an account? <a href="#" id="toLoginLink">Login here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const loginRadio = document.getElementById("login");
+        const signupRadio = document.getElementById("signup");
+        const formInner = document.getElementById("formInner");
+        const toSignupLink = document.getElementById("toSignupLink");
+        const toLoginLink = document.getElementById("toLoginLink");
+
+        function updateSlide() {
+            if (signupRadio.checked) {
+                formInner.style.transform = "translateX(-50%)";
+            } else {
+                formInner.style.transform = "translateX(0%)";
+            }
+        }
+
+        loginRadio.addEventListener("change", updateSlide);
+        signupRadio.addEventListener("change", updateSlide);
+
+        toSignupLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            signupRadio.checked = true;
+            updateSlide();
+        });
+
+        toLoginLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            loginRadio.checked = true;
+            updateSlide();
+        });
+    </script>
+}

@@ -1,0 +1,398 @@
+@{
+    ViewBag.Title = "Fresh Bakery & Custom Cakes";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<!-- Custom Styles for Homepage -->
+<style>
+    /* Hero Section */
+    .hero-section {
+        background: radial-gradient(circle at 70% 30%, #FFF0F3 0%, #FFE5D9 50%, #FFF8F0 100%);
+        padding: 90px 0 80px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #FFFFFF;
+        padding: 6px 18px;
+        border-radius: 30px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #D81B60;
+        box-shadow: 0 4px 15px rgba(244, 172, 183, 0.4);
+        margin-bottom: 24px;
+    }
+
+    .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #3D231D;
+        margin-bottom: 20px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.15rem;
+        color: #6C584C;
+        margin-bottom: 35px;
+        max-width: 580px;
+    }
+
+    .btn-hero-primary {
+        background: linear-gradient(135deg, #F4ACB7 0%, #D81B60 100%);
+        color: white;
+        padding: 14px 32px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 10px 25px rgba(216, 27, 96, 0.3);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-hero-primary:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(216, 27, 96, 0.4);
+    }
+
+    .btn-hero-secondary {
+        background: #FFFFFF;
+        color: #5C3A21;
+        padding: 14px 32px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1rem;
+        border: 2px solid #F4ACB7;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-hero-secondary:hover {
+        background: #FFF0F3;
+        color: #D81B60;
+        transform: translateY(-3px);
+    }
+
+    .hero-image-wrapper {
+        position: relative;
+        text-align: center;
+    }
+
+    .hero-main-img {
+        max-width: 100%;
+        border-radius: 30px;
+        box-shadow: 0 25px 60px rgba(92, 58, 33, 0.15);
+        border: 8px solid #FFFFFF;
+    }
+
+    .hero-floating-card {
+        position: absolute;
+        background: #FFFFFF;
+        padding: 14px 22px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid #FFE5D9;
+        animation: floatCard 4s ease-in-out infinite;
+    }
+
+    .card-pos-1 { top: 10%; left: -20px; }
+    .card-pos-2 { bottom: 8%; right: -15px; animation-delay: 2s; }
+
+    @@keyframes floatCard {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+    }
+
+    /* Section Typography */
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #3D231D;
+        text-align: center;
+    }
+
+    .section-subtitle {
+        color: #7E5742;
+        text-align: center;
+        max-width: 600px;
+        margin: 10px auto 45px;
+        font-size: 1.05rem;
+    }
+
+    /* Category Cards */
+    .category-card {
+        background: #FFFFFF;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(92, 58, 33, 0.05);
+        border: 1px solid rgba(244, 172, 183, 0.3);
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .category-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(244, 172, 183, 0.35);
+        border-color: #F4ACB7;
+    }
+
+    .category-card img {
+        height: 220px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .category-card:hover img {
+        transform: scale(1.06);
+    }
+
+    .category-card-body {
+        padding: 24px;
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .category-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #3D231D;
+        margin-bottom: 8px;
+    }
+
+    .category-card-desc {
+        color: #7E5742;
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+        flex-grow: 1;
+    }
+
+    /* Features Grid */
+    .feature-box {
+        background: #FFFFFF;
+        padding: 35px 25px;
+        border-radius: 24px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(92, 58, 33, 0.05);
+        border: 1px solid #FFE5D9;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-5px);
+        background: #FFF0F3;
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #FFD6E0, #F4ACB7);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: #D81B60;
+        margin-bottom: 20px;
+    }
+
+    /* Banner */
+    .promo-banner {
+        background: linear-gradient(135deg, #3D231D 0%, #5C3A21 100%);
+        border-radius: 32px;
+        padding: 60px 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .promo-banner h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #FFE5D9;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-tag">
+                    <i class="fas fa-crown"></i> Premium Artisanal Bakery
+                </div>
+                <h1 class="hero-title">Baked with Love, Served with Elegance</h1>
+                <p class="hero-subtitle">Indulge in freshly baked artisan breads, decadent frosted cakes, fudgy brownies, and custom-designed masterpieces made with 100% organic butter and cocoa.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Customer" asp-action="Shop" class="btn-hero-primary">
+                        <span>Explore Our Menu</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a asp-controller="Customer" asp-action="customOrder" class="btn-hero-secondary">
+                        <i class="fas fa-birthday-cake text-danger"></i>
+                        <span>Build Custom Cake</span>
+                    </a>
+                </div>
+                <div class="d-flex align-items-center gap-4 mt-4 pt-3 border-top border-light">
+                    <div>
+                        <h4 class="fw-bold m-0 text-danger">100%</h4>
+                        <small class="text-muted">Fresh & Organic</small>
+                    </div>
+                    <div class="border-start ps-4">
+                        <h4 class="fw-bold m-0 text-danger">45 Min</h4>
+                        <small class="text-muted">Express Delivery</small>
+                    </div>
+                    <div class="border-start ps-4">
+                        <h4 class="fw-bold m-0 text-danger">5.0 ★</h4>
+                        <small class="text-muted">Customer Rating</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image-wrapper">
+                    <img src="@Url.Content("~/img/cake_card.jpg")" alt="Royal Bakery Special Cake" class="hero-main-img">
+                    <div class="hero-floating-card card-pos-1">
+                        <i class="fas fa-award text-warning fs-3"></i>
+                        <div>
+                            <strong class="d-block text-dark">Award Winning</strong>
+                            <small class="text-muted">Best Red Velvet 2026</small>
+                        </div>
+                    </div>
+                    <div class="hero-floating-card card-pos-2">
+                        <i class="fas fa-truck-fast text-danger fs-3"></i>
+                        <div>
+                            <strong class="d-block text-dark">Hot & Fresh</strong>
+                            <small class="text-muted">Baked to Order</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Category Highlights Section (High-Quality Relevant Bakery Images) -->
+<section class="py-5 bg-cream">
+    <div class="container py-4">
+        <h2 class="section-title">Explore Our Bakery Categories</h2>
+        <p class="section-subtitle">From crunchy morning biscuits to luxurious multi-tier celebration cakes, explore our handcrafted selection.</p>
+
+        <div class="row g-4">
+            @{
+                var categoriesList = new[] {
+                    new { Title = "Celebration Cakes", Img = "cake_card.jpg", Desc = "Decadent multi-layered cakes, red velvet, and rich chocolate ganache." },
+                    new { Title = "Artisan Cookies", Img = "cookies_card.jpg", Desc = "Crisp on the edges, chewy in the middle chocolate chip packs." },
+                    new { Title = "Golden Breads", Img = "bread_card.jpg", Desc = "Crusty sourdoughs, French loaves, and soft country breads." },
+                    new { Title = "French Pastries", Img = "pastries_card.jpg", Desc = "Flaky butter croissants, fruit tarts, and cream eclairs." },
+                    new { Title = "Glazed Donuts", Img = "donuts_card.jpg", Desc = "Fluffy fried ring donuts dipped in rich strawberry & chocolate glaze." },
+                    new { Title = "Gourmet Cupcakes", Img = "cupcakes_card.jpg", Desc = "Mini frosted cupcakes adorned with sprinkles and cream." },
+                    new { Title = "Fudgy Brownies", Img = "brownies_card.jpg", Desc = "Rich dark chocolate brownies with melt-in-mouth texture." },
+                    new { Title = "Dinner Buns", Img = "buns_card.jpg", Desc = "Soft, warm golden dinner buns baked fresh every morning." }
+                };
+
+                foreach (var cat in categoriesList)
+                {
+                    <div class="col-lg-3 col-md-6">
+                        <div class="category-card">
+                            <div class="overflow-hidden">
+                                <img src="@Url.Content("~/img/" + cat.Img)" alt="@cat.Title">
+                            </div>
+                            <div class="category-card-body">
+                                <h3 class="category-card-title">@cat.Title</h3>
+                                <p class="category-card-desc">@cat.Desc</p>
+                                <a asp-controller="Customer" asp-action="Shop" class="btn btn-sm btn-outline-danger rounded-pill px-4 fw-semibold mt-auto">Browse Category</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Custom Cake Interactive Promo Banner -->
+<section class="py-5" style="background: #FFF0F3;">
+    <div class="container">
+        <div class="promo-banner shadow-lg">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3">Interactive Cake Builder</span>
+                    <h2>Design Your Celebration Masterpiece</h2>
+                    <p class="fs-5 text-light opacity-90 mb-4">Drag and drop edible toppings, pick custom tier sizes, select Belgian chocolate or Red Velvet frosting, and watch live real-time price calculations in PKR!</p>
+                    <a asp-controller="Customer" asp-action="customOrder" class="btn btn-light rounded-pill px-4 py-3 fw-bold text-dark fs-6 shadow">
+                        <i class="fas fa-magic me-2 text-danger"></i>Launch Interactive Visualizer
+                    </a>
+                </div>
+                <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                    <i class="fas fa-birthday-cake text-warning opacity-75" style="font-size: 9rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Features Section (Bakers start at 7:00 AM) -->
+<section class="py-5 bg-cream">
+    <div class="container py-4">
+        <h2 class="section-title">Why Choose Royal Bakers?</h2>
+        <p class="section-subtitle">We combine traditional baking craftsmanship with modern convenience to deliver perfection to your doorstep.</p>
+
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-wheat-awn"></i></div>
+                    <h4 class="fw-bold mb-2">100% Organic</h4>
+                    <p class="text-muted small">We use pure organic flour, farm-fresh eggs, and real Grade A butter with zero artificial flavors.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-clock"></i></div>
+                    <h4 class="fw-bold mb-2">Bakers start at 7:00 AM</h4>
+                    <p class="text-muted small">Our master bakers start at 7:00 AM daily so your bakery treats arrive warm, fresh, and delicious.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-motorcycle"></i></div>
+                    <h4 class="fw-bold mb-2">Express Delivery</h4>
+                    <p class="text-muted small">Delivered in temperature-controlled packaging within 45 to 60 minutes across the city.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                    <h4 class="fw-bold mb-2">24/7 AI Support</h4>
+                    <p class="text-muted small">Have questions about ingredients or custom orders? Our intelligent chatbot is ready to assist!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

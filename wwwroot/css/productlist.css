@@ -1,0 +1,98 @@
+﻿.product-list-title {
+    color: #a05252;
+    text-decoration: underline wavy;
+}
+
+.product-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    background-color: #fdfdfd;
+    border: 2px solid #5b5b5b !important;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease;
+    gap: 1rem;
+}
+
+    .product-card:hover {
+        box-shadow: 0 10px 16px rgba(0, 0, 0, 0.15);
+    }
+
+.product-img {
+    flex: 0 0 150px;
+}
+
+    .product-img img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+    }
+
+.product-details {
+    flex: 1;
+}
+
+    .product-details h4 {
+        color: #a05252;
+        margin-bottom: 0.5rem;
+    }
+
+.price-qty {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.description {
+    font-style: italic;
+    color: #555;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+    .btn-group button {
+        font-weight: 500;
+        min-width: 80px;
+        color: white; /* Always white text */
+        transition: background-color 0.3s ease;
+    }
+
+/* Prevent black text on hover */
+.btn-warning:hover,
+.btn-danger:hover {
+    color: white !important; /* Override Bootstrap */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .product-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .product-img {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .price-qty {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-group {
+        justify-content: center;
+    }
+}
