@@ -422,7 +422,7 @@ This project reflects my journey as a developer and my passion for creating prac
     <img src="https://skillicons.dev/icons?i=github" height="55" alt="GitHub"/>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="mailto:YOUR_EMAIL@gmail.com">
+  <a href="mailto:mustafaazeem270@gmail.com">
     <img src="https://skillicons.dev/icons?i=gmail" height="55" alt="Gmail"/>
   </a>
 </p>
